@@ -1,4 +1,7 @@
 export default async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*"); // or specify your GitHub Pages domain
+  res.setHeader("Access-Control-Allow-Methods", "GET");
+  
   const API_KEY = process.env.YOUTUBE_API_KEY;
   const { channelId } = req.query;
 
