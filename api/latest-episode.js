@@ -73,11 +73,15 @@ export default async function handler(req, res) {
       return totalSeconds > 180;
     });
 
+    const nonShortsSorted = nonShorts.sort((a, b) => {
+      return new Date(b.snippet.publishedAt) - new Date(a.snippet.publishedAt);
+    });
+
     if (nonShorts.length === 0) {
       return res.status(404).json({ error: "No suitable weekday episode found." });
     }
 
-    const video = nonShorts[0];
+    const video = nonShortsSorted[0];
     const videoId = video.id.videoId;
     const title = video.snippet.title;
     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
