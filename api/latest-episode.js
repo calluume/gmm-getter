@@ -1,15 +1,45 @@
 let cachedVideo = null;
+let cacheDate = null;
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET");
   
   const API_KEY = process.env.YOUTUBE_API_KEY;
-  const channelId = 'UC4PooiX37Pld1T8J5SYT-SQ';
+  const channelId = 'UC4PooiX37Pld1T8J5SYT-SQ'; // GMM channel ID
 
   const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${channelId}&part=snippet,id&order=date&maxResults=10&type=video`;
 
-  if (cachedVideo) {
+  // Get current date and check if it is a weekday
+  const now = new Date();
+  const today = now.toISOString().split("T")[0]; // e.g. "2025-06-20"
+  const pacificTime = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Los_Angeles",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: false
+  }).formatToParts(now);
+
+  const hour = Number(pacificTime.find(part => part.type === "hour").value);
+  const minutes = Number(pacificTime.find(part => part.type === "minute").value);
+
+  const isWeekday = now.getDay() >= 1 && now.getDay() <= 5;
+
+  // Should now always reset cache if:
+  //   - The cache is not set OR
+  //   - It is after 3:10AM pacific time
+  //   - The cache has not been updated today
+  //   - It is a weekday
+  
+  const shouldUpdate =
+    today !== cacheDate &&
+    isWeekday &&
+    hour >= 3 &&
+    minutes >= 10;
+  
+  console.log(hour, minutes, shouldUpdate)
+
+  if (!shouldUpdate && cachedVideo) {
     return res.status(200).json({ ...cachedVideo, returnedCache: true });
   }
 
