@@ -41,7 +41,7 @@ export default async function handler(req, res) {
       const minutes = match?.[1] ? parseInt(match[1]) : 0;
       const seconds = match?.[2] ? parseInt(match[2]) : 0;
       const totalSeconds = (minutes * 60) + seconds;
-      return totalSeconds >= 60;
+      return totalSeconds > 180;
     });
 
     if (nonShorts.length === 0) {
