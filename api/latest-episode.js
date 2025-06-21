@@ -34,8 +34,7 @@ export default async function handler(req, res) {
   const shouldUpdate =
     today !== cacheDate &&
     isWeekday &&
-    hour >= 3 &&
-    minutes >= 10;
+    (hour > 3) || (hour === 3 && minutes >= 10);
   
   console.log(hour, minutes, shouldUpdate)
 
